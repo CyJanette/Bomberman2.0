@@ -1,29 +1,19 @@
-# Directorios de origen y destino
-SRC_DIR := src
-BIN_DIR := bin
+CXX = g++
+CXXFLAGS = -Iinclude -std=c++11
 
-SFML := -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lbox2d
+SRC = $(wildcard src/*.cpp)
+OBJ = $(SRC:.cpp=.o)
+EXEC = bomberman
 
-# Obtener todos los archivos .cpp en el directorio de origen
-CPP_FILES := $(wildcard $(SRC_DIR)/*.cpp)
+all: $(EXEC)
 
-# Generar los nombres de los archivos .exe en el directorio de destino
-EXE_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(BIN_DIR)/%.exe,$(CPP_FILES))
+$(EXEC): $(OBJ)
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Regla para compilar cada archivo .cpp y generar el archivo .exe correspondiente
-$(BIN_DIR)/%.exe: $(SRC_DIR)/%.cpp
-	g++ $< -o $@ $(SFML) -Iinclude
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
-# Regla por defecto para compilar todos los archivos .cpp
-all: $(EXE_FILES)
-
-# Regla para ejecutar cada archivo .exe
-run%: $(BIN_DIR)/%.exe
-	./$<
-
-# Regla para limpiar los archivos generados
 clean:
-	rm -f $(EXE_FILES)
+	rm -f $(OBJ) $(EXEC)
 
-.PHONY: all clean
-.PHONY: run-%
+.PHONY: clean
